@@ -1,0 +1,16 @@
+
+<form method="post" action="{% url 'payment_request' %}">
+<!--<form method="post" action="{% url 'bikash_payment' %}">-->
+  {% csrf_token %}
+
+  <label for="phone_number">Phone Number:</label>
+  <input type="text" id="phone_number" name="phone_number" required>
+
+  <label for="pin">PIN:</label>
+  <input type="text" id="pin" name="pin" required>
+
+  <label for="amount">Amount:</label>
+  <input type="text" id="amount" name="amount" required>
+
+  <button type="submit">Submit Payment Request</button>
+</form>

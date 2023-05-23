@@ -1,0 +1,218 @@
+{% extends 'authority_base/authority_base.html' %}
+{% load static %}
+
+{% block title %} {{title}} {% endblock title %}
+
+
+{% block body %}
+ <!-- Sale & Revenue Start -->
+ <div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-line fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Today Sale</p>
+                    <h6 class="mb-0">TK {{total_sales}} </h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Total Sale</p>
+                    <h6 class="mb-0">TK  {{all_total_salse}} </h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-area fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Order Today</p>
+                    <h6 class="mb-0"> {{total_orders_today}} </h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Total Order</p>
+                    <h6 class="mb-0"> {{all_orders}} </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Sale & Revenue End -->
+
+
+{% comment %} <!-- Sales Chart Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-6">
+            <div class="bg-light text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0">Worldwide Sales</h6>
+                    <a href="">Show All</a>
+                </div>
+                <canvas id="worldwide-sales"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-12 col-xl-6">
+            <div class="bg-light text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0">Salse & Revenue</h6>
+                    <a href="">Show All</a>
+                </div>
+                <canvas id="salse-revenue"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Sales Chart End --> {% endcomment %}
+
+
+<!-- Recent Sales Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Recent Order</h6>
+            <a href="{% url 'authority:pending_order_list' %}">Show All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-dark">
+                        <th scope="col">Date</th>
+                        <th scope="col">Invoice</th>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                        {% for order in orders %}
+                        <tr>
+                            <td> {{order.ordered_at}} </td>
+                            <td> {{order.ordered_id}} </td>
+                            <td> {{order.user.profile.first_name}} {{order.user.profile.last_name}} </td>
+                            <td> {{order.get_totals}} </td>
+                            <td>
+                                {% if order.payment_status %}
+                                    Paid
+                                {% else %}
+                                    Cash On
+                                {% endif %}
+                            </td>
+                            <td><a class="btn btn-sm btn-primary" href="{% url 'authority:order_details' order.id %}">Detail</a></td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Recent Sales End -->
+
+
+<!-- Widgets Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-md-12 col-xl-12">
+            <div class="h-100 bg-light rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0">Customer Messages</h6>
+                    {% comment %} <a href="">Show All</a> {% endcomment %}
+                </div>
+                {% if custormermessages %}          
+                    {% for message in custormermessages %}
+                        <div class="d-flex align-items-center pt-3">
+                            <div class="w-100 ms-3">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-0"> {{message.name}} </h6>
+                                    <small> {{message.send_at}} </small>
+                                </div>
+                                <a href="{% url 'authority:customer_message_detail' message.id %}"><span>{{message.message |slice:":30"}}......</span></a> 
+                            </div>
+                        </div>        
+                    {% endfor %}            
+                {% endif %}
+            </div>
+        </div>
+        {% comment %} <div class="col-sm-12 col-md-6 col-xl-4">
+            <div class="h-100 bg-light rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0">Calender</h6>
+                    <a href="">Show All</a>
+                </div>
+                <div id="calender"></div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6 col-xl-4">
+            <div class="h-100 bg-light rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0">To Do List</h6>
+                    <a href="">Show All</a>
+                </div>
+                <div class="d-flex mb-2">
+                    <input class="form-control bg-transparent" type="text" placeholder="Enter task">
+                    <button type="button" class="btn btn-primary ms-2">Add</button>
+                </div>
+                <div class="d-flex align-items-center border-bottom py-2">
+                    <input class="form-check-input m-0" type="checkbox">
+                    <div class="w-100 ms-3">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <span>Short task goes here...</span>
+                            <button class="btn btn-sm"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom py-2">
+                    <input class="form-check-input m-0" type="checkbox">
+                    <div class="w-100 ms-3">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <span>Short task goes here...</span>
+                            <button class="btn btn-sm"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom py-2">
+                    <input class="form-check-input m-0" type="checkbox" checked>
+                    <div class="w-100 ms-3">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <span><del>Short task goes here...</del></span>
+                            <button class="btn btn-sm text-primary"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom py-2">
+                    <input class="form-check-input m-0" type="checkbox">
+                    <div class="w-100 ms-3">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <span>Short task goes here...</span>
+                            <button class="btn btn-sm"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center pt-2">
+                    <input class="form-check-input m-0" type="checkbox">
+                    <div class="w-100 ms-3">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <span>Short task goes here...</span>
+                            <button class="btn btn-sm"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endcomment %}
+</div>
+<!-- Widgets End --> 
+
+{% endblock body %}

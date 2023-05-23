@@ -1,0 +1,398 @@
+{% extends 'authority_base/authority_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %} {{title}} {% endblock title %}
+
+
+{% block body %}
+<div class="bg-light rounded  p-4">
+    {% if updated %}
+        <form method='POST' enctype="multipart/form-data"> {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <label for="exampleInputEmail1" class="form-label">Category Name</label>
+                    {{form.category_name |add_class:"form-control"}}
+                </div>
+                <div class="col">
+                    <label for="exampleInputEmail1" class="form-label">Category Photo</label>
+                    {{form.photo |add_class:"form-select"}}
+                </div>   
+            </div>
+            <div class="row mb-4">
+                <div class="col">
+                    <label for="exampleInputEmail1" class="form-label">Sort Description</label>
+                    {{form.sort_description |add_class:"form-control"}}
+                </div>
+            </div>
+            <div class="mb-3">
+                <a class="btn btn-success" href="{% url 'authority:add_food_category' %}" role="button"> <i class="fa-solid fa-arrow-left me-2"></i> Back</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+                
+            </div>
+            
+        </form>
+    {% elif details %}
+        <div class="table-responsive">
+            <div class="col-md-4">
+                <h6 class="mb-4">Order Details</h6>
+            </div>
+            
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                    {% if not order.order_confirm %}
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#BookTable">
+                            Confirm Order
+                        </button>
+                    {% endif %}
+                    {% comment %} <a class="btn btn-primary me-2" href="{% url 'report:order_pdf' order.id %}" target="_blank" role="button">Print</a> {% endcomment %}
+                    <a class="btn btn-primary" href="{% url 'authority:confirmed_order_list' %}" role="button">Back</a>
+                </div>
+            
+            <table class="table text-middle align-middle table-bordered table-striped table-hover mb-0">
+                <thead class="bg-primary">
+                    <tr class="text-dark">
+                        <th class="col-4" scope="col">Fields</th>
+                        <th class="col-8" scope="col">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td> Customer Name </td>
+                            <td> {{order.user.profile.first_name}} {{order.user.profile.last_name}}</td>
+                        </tr> 
+                        <tr>
+                            <td> Phone Number </td>
+                            <td> {{order.user.profile.phone_number}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Order ID </td>
+                            <td> {{order.ordered_id}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Customer Address </td>
+                            <td> {{order.user.profile.address_1}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Shipping Address </td>
+                            <td> {{order.user.shipping_address.address}}, {{order.user.shipping_address.city}}, {{order.user.shipping_address.country}},{{order.user.shipping_address.zip_code}}   </td>
+                        </tr> 
+                        <tr>
+                            <td>Order Total</td>
+                            <td> {{order.get_totals}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Shipping Charge</td>
+                            <td> {{shipping_charge.shipping_charge}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Total </td>
+                            <td> {{total}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Payment Status </td>
+                            
+                            {% if order.payment_status %}
+                                <td> Paid </td>
+                            {% else %}
+                                <td> Not Paid </td>
+                            {% endif %} 
+                        </tr> 
+                        <tr>
+                            <td> Delevery Status </td>
+                            
+                            {% if order.delevery_status %}
+                                <td> delivered </td>
+                            {% else %}
+                                <td> Pending </td>
+                            {% endif %} 
+                        </tr> 
+                        {% if order.payment_status %}
+                        <tr>
+                            <td> Transaction ID </td>
+                            <td> {{order.payment_id}} </td>
+                             
+                        </tr> 
+                        {% endif %}
+                        <tr>
+                            <td> Items </td>
+                            <td> 
+                                
+                                {% for items in order.orderitems.all %}
+                                    {{items.items}}
+                                    {% for item in items.Foods.all %}
+                                        {{item}}
+                                        
+                                    {% endfor %}
+                                        
+                                {% endfor %}
+                                    
+                            </td>
+                        </tr> 
+                </tbody>
+            </table>
+        </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="BookTable" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'authority:order_confirm' order.id %}"> {% csrf_token %}
+                            <div class="row mb-4">
+                                <div class="col">
+                                    <label for="exampleInputEmail1" class="form-label">Are Your Sure your want to confirm order?</label>
+                                    {{form.order_confirm | add_class:"form-check-input"}}
+                                </div>
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="Submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+                </div>
+                </div>
+            </div>
+    {% elif deleted %}
+    <div class="table-responsive">
+        <div class="col-md-4">
+            <h6 class="mb-4">Delete Order Table</h6>
+        </div>
+        
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                <form action="" method='POST'> {% csrf_token %}
+                    <button class="btn btn-danger" type='submit' id="deleteTask"><i class="fa-solid fa-trash px-2"></i>Delete</button>
+                </form>
+                
+                <a class="btn btn-primary" href="{% url 'authority:confirmed_order_list' %}" role="button">Back</a>
+            </div>
+        
+            <table class="table text-middle align-middle table-bordered table-striped table-hover mb-0">
+                <thead class="bg-primary">
+                    <tr class="text-dark">
+                        <th class="col-4" scope="col">Fields</th>
+                        <th class="col-8" scope="col">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td> Customer Name </td>
+                            <td> {{order.user.profile.first_name}} {{order.user.profile.last_name}}</td>
+                        </tr> 
+                        <tr>
+                            <td> Phone Number </td>
+                            <td> {{order.user.profile.phone_number}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Order ID </td>
+                            <td> {{order.ordered_id}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Customer Address </td>
+                            <td> {{order.user.profile.address_1}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Shipping Address </td>
+                            <td> {{order.user.shipping_address.address}}, {{order.user.shipping_address.city}}, {{order.user.shipping_address.country}},{{order.user.shipping_address.zip_code}}   </td>
+                        </tr> 
+                        <tr>
+                            <td>Order Total</td>
+                            <td> {{order.get_totals}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Shipping Charge</td>
+                            <td> {{shipping_charge.shipping_charge}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Total </td>
+                            <td> {{total}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Payment Status </td>
+                            
+                            {% if order.payment_status %}
+                                <td> Paid </td>
+                            {% else %}
+                                <td> Not Paid </td>
+                            {% endif %} 
+                        </tr> 
+                        {% if order.payment_status %}
+                        <tr>
+                            <td> Transaction ID </td>
+                            <td> {{order.payment_id}} </td>
+                             
+                        </tr> 
+                        {% endif %}
+                        <tr>
+                            <td> Items </td>
+                            <td> 
+                                
+                                {% for items in order.orderitems.all %}
+                                    {{items.items}}
+                                    {% for item in items.Foods.all %}
+                                        {{item}}
+                                        
+                                    {% endfor %}
+                                        
+                                {% endfor %}
+                                    
+                            </td>
+                        </tr> 
+                </tbody>
+            </table>    
+    </div>
+    {% elif confirmed %}
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h4 class="mb-0">Confirmed Order</h4>
+            </div>
+            <div class="table-responsive">
+                <table class="table text-start align-middle table-bordered table-hover mb-0">
+                    <thead>
+                        <tr class="text-white bg-dark">
+                            <th scope="col">Date</th>
+                            <th scope="col">Invoice</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Delevery</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            {% for order in orders %}
+                            <tr>
+                                <td> {{order.ordered_at}} </td>
+                                <td> {{order.ordered_id}} </td>
+                                <td> {{order.user.profile.first_name}} {{order.user.profile.last_name}} </td>
+                                <td> {{order.get_totals}} </td>
+                                <td>
+                                    {% if order.payment_status %}
+                                        Paid
+                                    {% else %}
+                                        Cash On
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if order.delevery_status %}
+                                        delivered
+                                    {% else %}
+                                        Pending
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-primary" href="{% url 'authority:order_details' order.id %}">Detail</a>
+                                    {% if not order.delevery_status %}
+                                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#BookTable">
+                                            Delevery
+                                        </button>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="BookTable" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Confirm Delevery</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form method="POST" enctype="multipart/form-data" action="{% url 'authority:confirm_delevery' order.id %}"> {% csrf_token %}
+                                                                <div class="row mb-4">
+                                                                    <div class="col">
+                                                                        <label for="exampleInputEmail1" class="form-label">Are Your Sure your want to confirm delevery?</label>
+                                                                        {{form.delevery_status | add_class:"form-check-input"}}
+                                                                    </div>
+                                                                </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="Submit" class="btn btn-primary">Save</button>
+                                                        </div>
+                                                    </form>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                    {% endif %}
+                                    <a class="btn btn-sm btn-danger" href="{% url 'authority:order_delete' order.id %}">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Recent Sales End -->
+
+    {% else %}
+      <!-- Recent Sales Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h4 class="mb-0">Pending Order</h4>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-white bg-dark">
+                        <th scope="col">Date</th>
+                        <th scope="col">Invoice</th>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                        {% for order in orders %}
+                        <tr>
+                            <td> {{order.ordered_at}} </td>
+                            <td> {{order.ordered_id}} </td>
+                            <td> {{order.user.profile.first_name}} {{order.user.profile.last_name}} </td>
+                            <td> {{order.get_totals}} </td>
+                            <td>
+                                {% if order.payment_status %}
+                                    Paid
+                                {% else %}
+                                    Cash On
+                                {% endif %}
+                            </td>
+                            <td><a class="btn btn-sm btn-primary" href="{% url 'authority:order_details' order.id %}">Detail</a></td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Recent Sales End -->
+{% endif %}
+
+<script>
+    var deleteTask = document.getElementById("deleteTask");
+    var deleteForm = document.getElementById("deleteForm");
+
+    deleteTask.addEventListener("click", function(event) {
+    var result = confirm("Are you sure you want to Delete?");
+    if (result) {
+        alert('Deleted successfully');
+    } else {
+        alert('Deletion Cancelled');
+        event.preventDefault(); // prevent default form submission
+    }
+    });
+
+    deleteForm.addEventListener("submit", function(event) {
+    {% comment %} event.preventDefault(); // prevent default form submission {% endcomment %}
+    });
+ 
+                
+</script>
+    
+{% endblock body %}

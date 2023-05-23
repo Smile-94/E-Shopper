@@ -1,0 +1,267 @@
+{% extends 'authority_base/authority_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %} {{title}} {% endblock title %}
+
+
+{% block body %}
+<div class="bg-light rounded  p-4">
+    {% if updated %}
+        <form method='POST' enctype="multipart/form-data"> {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <label for="exampleInputEmail1" class="form-label">Category Name</label>
+                    {{form.category_name |add_class:"form-control"}}
+                </div>
+                <div class="col">
+                    <label for="exampleInputEmail1" class="form-label">Category Photo</label>
+                    {{form.photo |add_class:"form-select"}}
+                </div>   
+            </div>
+            <div class="row mb-4">
+                <div class="col">
+                    <label for="exampleInputEmail1" class="form-label">Sort Description</label>
+                    {{form.sort_description |add_class:"form-control"}}
+                </div>
+            </div>
+            <div class="mb-3">
+                <a class="btn btn-success" href="{% url 'authority:add_food_category' %}" role="button"> <i class="fa-solid fa-arrow-left me-2"></i> Back</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+                
+            </div>
+            
+        </form>
+    {% elif details %}
+        <div class="table-responsive">
+            <div class="col-md-4">
+                <h6 class="mb-4">Table Booking Details</h6>
+            </div>
+            
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                    {% if not booktable.confirm_status %}
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#BookTable">
+                            Confirm Table
+                        </button>
+                    {% endif %}
+                    {% if booktable.confirm_status %}
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#BookTable">
+                            Edit
+                        </button>
+                    {% endif %}
+                    <a class="btn btn-primary" href="{% url 'authority:table_bookig_request_list' %}" role="button">Back</a>
+                </div>
+            
+            <table class="table text-middle align-middle table-bordered table-striped table-hover mb-0">
+                <thead class="bg-primary">
+                    <tr class="text-dark">
+                        <th class="col-4" scope="col">Fields</th>
+                        <th class="col-8" scope="col">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td> Customer Name </td>
+                            <td> {{booktable.full_name}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Booking Date </td>
+                            <td> {{booktable.date}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Booking Time </td>
+                            <td> {{booktable.time}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Occasion </td>
+                            <td> {{booktable.occasion}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Number of Gust </td>
+                            <td> {{booktable.party_size}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Phone Number </td>
+                            <td> {{booktable.phone_number}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Email </td>
+                            <td> {{booktable.email}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Table No </td>
+                            <td> {{booktable.table_no}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Message </td>
+                            <td> {{booktable.messages}} </td>
+                        </tr> 
+                        <tr>
+                            <td> Review Message </td>
+                            <td> {{booktable.review_message}} </td>
+                        </tr> 
+                   
+                </tbody>
+            </table>
+        </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="BookTable" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm Table Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'authority:table_bookig_confirm' booktable.id %}"> {% csrf_token %}
+                            <div class="row mb-4">
+                                <div class="col">
+                                    <label for="exampleInputEmail1" class="form-label">Table No</label>
+                                    {{form.table_no |add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="exampleInputEmail1" class="form-label">Review Message</label>
+                                    {{form.review_message |add_class:"form-control"}}
+                                </div>
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="Submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+                </div>
+                </div>
+            </div>
+    {% elif deleted %}
+    <div class="table-responsive">
+        <div class="col-md-4">
+            <h6 class="mb-4">Delete Booked Table</h6>
+        </div>
+        
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                <form action="" method='POST'> {% csrf_token %}
+                    <button class="btn btn-danger" type='submit' id="deleteTask"><i class="fa-solid fa-trash px-2"></i>Delete</button>
+                </form>
+                
+                <a class="btn btn-primary" href="{% url 'authority:table_bookig_request_list' %}" role="button">Back</a>
+            </div>
+        
+        <table class="table text-middle align-middle table-bordered table-striped table-hover mb-0">
+            <thead class="bg-primary">
+                <tr class="text-dark">
+                    <th class="col-4" scope="col">Fields</th>
+                    <th class="col-8" scope="col">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td> Customer Name </td>
+                        <td> {{booktable.full_name}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Booking Date </td>
+                        <td> {{booktable.date}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Booking Time </td>
+                        <td> {{booktable.time}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Occasion </td>
+                        <td> {{booktable.occasion}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Number of Gust </td>
+                        <td> {{booktable.party_size}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Phone Number </td>
+                        <td> {{booktable.phone_number}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Email </td>
+                        <td> {{booktable.email}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Table No </td>
+                        <td> {{booktable.table_no}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Message </td>
+                        <td> {{booktable.messages}} </td>
+                    </tr> 
+                    <tr>
+                        <td> Review Message </td>
+                        <td> {{booktable.review_message}} </td>
+                    </tr> 
+               
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+      <div class="table-responsive">
+        <div class="col-md-4">
+            <h6 class="mb-4">Table Booking Request List</h6>
+        </div>
+        <table class="table text-middle align-middle table-bordered table-striped table-hover mb-0">
+            <thead class="bg-primary">
+                <tr class="text-dark">
+                    <th scope="col">Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Party Size</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                {% for bookingrequest in bookingrequests %}
+                    <tr>
+                        <td> {{bookingrequest.full_name}} </td>
+                        <td>{{bookingrequest.date}}</td>
+                        <td>{{bookingrequest.time}}</td>
+                        <td> {{bookingrequest.party_size}} </td>
+                        <td> {{bookingrequest.phone_number}} </td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" href="{% url 'authority:table_bookig_details' bookingrequest.id %}">Detail</a>
+                            
+                            {% if bookingrequest.confirm_status  %}
+                                <a class="btn btn-sm btn-danger" href="{% url 'authority:table_bookig_delete' bookingrequest.id %}"> Deletet</a>
+                            {% endif %}
+                                
+                        </td>
+                    </tr>
+                {% endfor %}    
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    var deleteTask = document.getElementById("deleteTask");
+    var deleteForm = document.getElementById("deleteForm");
+
+    deleteTask.addEventListener("click", function(event) {
+    var result = confirm("Are you sure you want to Delete?");
+    if (result) {
+        alert('Deleted successfully');
+    } else {
+        alert('Deletion Cancelled');
+        event.preventDefault(); // prevent default form submission
+    }
+    });
+
+    deleteForm.addEventListener("submit", function(event) {
+    {% comment %} event.preventDefault(); // prevent default form submission {% endcomment %}
+    });
+ 
+                
+</script>
+    
+{% endblock body %}

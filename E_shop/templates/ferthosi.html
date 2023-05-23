@@ -1,0 +1,28 @@
+{%extends 'master.html' %}
+{% block body%}
+
+<section id="form" style = 'margin-left:30%;'><!--form-->
+		<div class="container">
+			<div class="col-sm-4 col-sm-offset-1">
+                <div class="login-form"><!--login form-->
+						<h2>Login to your account</h2>
+						<form method="post" action="/ferthosi/">
+                            {% csrf_token %}
+                            <label>Username</label>
+                            <input name="username"/>
+                             <label>Password</label>
+
+                            <input name="password"/>
+                            <a href="{% url 'password_reset'%} " style="float:right;">Forgot Password</a><br>
+
+                            <button class ="btn btn-default" type ="submit">Login </button>
+                            <a href="{% url 'signup' %}"><span style="color:black; margin-left:120px;"> Create Your Account&nbsp;&rarr;</span></a>
+                        </form>
+                </div>
+            </div>
+        </div>
+</section>
+
+
+
+{%endblock%}

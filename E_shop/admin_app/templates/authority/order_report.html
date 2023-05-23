@@ -1,0 +1,65 @@
+{% extends 'authority_base/authority_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %} {{title}} {% endblock title %}
+
+
+{% block body %}
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h4 class="mb-0">Confirmed Order</h4>
+            </div>
+            <div class="col-md-12 col-lg-12 mb-4">
+                <form class="d-flex">
+                  <div class="row">
+                      <div class="col">
+                          {{orders.form.from_date | add_class:"form-control"}}
+                      </div>
+                      <div class="col">
+                          {{orders.form.to_date | add_class:"form-select"}}
+                      </div>
+                      <div class="col">
+                          <button class="btn btn-outline-success ms-2" type="submit">Search</button>
+                      </div>
+                    </div>
+                </form>
+              </div>
+            <div class="table-responsive">
+                <table class="table text-start align-middle table-bordered table-hover mb-0">
+                    <thead>
+                        <tr class="text-white bg-dark">
+                            <th scope="col">Date</th>
+                            <th scope="col">Invoice</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            {% for order in orders.qs %}
+                            <tr>
+                                <td> {{order.ordered_at}} </td>
+                                <td> {{order.ordered_id}} </td>
+                                <td> {{order.user.profile.first_name}} {{order.user.profile.last_name}} </td>
+                                <td> {{order.get_totals}} </td>
+                                <td>
+                                    {% if order.payment_status %}
+                                        Paid
+                                    {% else %}
+                                        Cash On
+                                    {% endif %}
+                                </td>
+                                
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Recent Sales End -->
+
+{% endblock body %}

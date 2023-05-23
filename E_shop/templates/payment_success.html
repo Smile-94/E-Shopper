@@ -1,0 +1,11 @@
+<!-- payment_success.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Payment Successful!</h1>
+    <p>Thank you for your payment. Below are the invoice details:</p>
+    <ul>
+        <li>User: {{ user }}</li>
+        <!-- Display other invoice details as needed -->
+    </ul>
+{% endblock %}

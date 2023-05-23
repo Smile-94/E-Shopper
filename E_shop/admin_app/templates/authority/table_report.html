@@ -1,0 +1,54 @@
+{% extends 'authority_base/authority_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %} {{title}} {% endblock title %}
+
+
+{% block body %}
+<div class="bg-light rounded  p-4">
+      <div class="table-responsive">
+        <div class="col-md-4">
+            <h6 class="mb-4">Booking Table List</h6>
+        </div>
+        <div class="col-md-12 col-lg-12 mb-4">
+            <form class="d-flex">
+              <div class="row">
+                  <div class="col">
+                      {{bookingrequests.form.from_date | add_class:"form-control"}}
+                  </div>
+                  <div class="col">
+                      {{bookingrequests.form.to_date | add_class:"form-select"}}
+                  </div>
+                  <div class="col">
+                      <button class="btn btn-outline-success ms-2" type="submit">Search</button>
+                  </div>
+                </div>
+            </form>
+          </div>
+        <table class="table text-middle align-middle table-bordered table-striped table-hover mb-0">
+            <thead class="bg-primary">
+                <tr class="text-dark">
+                    <th scope="col">Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Party Size</th>
+                    <th scope="col">Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                {% for bookingrequest in bookingrequests.qs %}
+                    <tr>
+                        <td> {{bookingrequest.full_name}} </td>
+                        <td>{{bookingrequest.date}}</td>
+                        <td>{{bookingrequest.time}}</td>
+                        <td> {{bookingrequest.party_size}} </td>
+                        <td> {{bookingrequest.phone_number}} </td>
+                    </tr>
+                {% endfor %}    
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock body %}

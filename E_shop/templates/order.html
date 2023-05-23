@@ -1,0 +1,67 @@
+{% extends 'master.html'%}
+{% block body%}
+
+<section id="cart_items">
+		<div class="container">
+			<div class="breadcrumbs">
+				<ol class="breadcrumb">
+				  <li><a href="">Home</a></li>
+				  <li class="active">Your Order</li>
+				</ol>
+			</div>
+			<div class="table-responsive cart_info">
+				<table class="table table-condensed">
+					<thead>
+						<tr class="cart_menu">
+							<td class="image">Order ID</td>
+							<td class="description"></td>
+							<td class="price">Payment Status</td>
+							<td class="quantity">Delivery Status</td>
+							<td class="total">Total</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+					{% for order in orders %}
+					
+						<tr>
+							<td class="cart_product">
+								<a href=""><img src="{{i.image}}" style="height:20px;width:auto;" alt=""></a>
+							</td>
+							<td class="cart_description">
+								<h4><a href="">{{order.ordered_id}}</a></h4>
+
+							</td>
+							{% if order.payment_status %}
+								<td class="cart_price">
+									<p>Paid</p>
+								</td>
+							{% else %}
+							<td class="cart_price">
+								<p>Pending</p>
+							</td>
+							{% endif %}
+							
+							{% if order.delevery_status %}
+								<td class="cart_price">
+									<p>Delivered</p>
+								</td>
+							{% else %}
+							<td class="cart_price">
+								<p>Pending</p>
+							</td>
+							{% endif %}
+							<td class="cart_total">
+								<p class="cart_total_price">{{order.get_totals}}TK</p>
+							</td>
+						</tr>
+					{%endfor %}
+
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section> <!--/#cart_items-->
+
+{% endblock %}

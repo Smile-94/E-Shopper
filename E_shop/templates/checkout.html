@@ -1,0 +1,101 @@
+{%extends 'master.html'%}
+
+{%block body%}
+<section id="cart_items">
+    <div class="container">
+        <div class="breadcrumbs">
+            <ol class="breadcrumb">
+              <li><a href="#">Home</a></li>
+              <li class="active">Checkout</li>
+            </ol>
+        </div>
+        <div class="table-responsive cart_info">
+            <table class="table table-condensed">
+                <thead>
+                    <tr class="cart_menu">
+                        <td class="image">Item</td>
+                        <td class="description"></td>
+                        <td class="price">Price</td>
+                        <td class="quantity">Quantity</td>
+                        <td class="total">Total</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in order_items%}
+                    <tr>
+                        <td class="cart_product">
+                            <a href=""><img src="{{item.items.image.url}}" style="height:20px;width:auto;" alt=""></a>
+                        </td>
+                        <td class="cart_description">
+                            <h4><a href="">{{item.items.name}}</a></h4>
+
+                        </td>
+                        <td class="cart_price">
+                            <p>৳{{item.items.price}}</p>
+                        </td>
+                        <td class="cart_quantity">
+                            <div class="cart_quantity_button">
+                                <input class="cart_quantity_input" type="text" name="quantity" value="{{item.quentity}}" autocomplete="off" size="2">
+                            </div>
+                        </td> 
+                        <td class="cart_total">
+                            <p class="cart_total_price">৳{{item.get_total}}</p>
+                        </td>
+                        <td class="cart_delete">
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+                <tfoot>
+                    <td>
+
+                    </td>
+                    <td>
+
+                    </td>
+                    <td>
+                        <hr>
+                        <h4>Sub Total </h4>
+                    </td>
+                    <td>
+
+                    </td>
+                    <td>
+                        <hr>
+                        <h3> {{order_total}}</h3>
+                    </td>
+                </tfoot>
+            </table>
+        </div>
+    <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" style="float:right"> Check Out</button>-->
+    {% if saved_address.is_fully_filled %}
+            <a class="btn btn-primary" href="{% url 'app:payment' %}" >Make Payment</a>
+    {% else %}
+        <b class="stt-name">Please fillup the billing address</b>
+    {% endif %}
+
+   
+
+    </div>
+</section> <!--/#cart_items-->
+<br>
+<div class="container" xmlns="http://www.w3.org/1999/html">
+    <div class="col my-4">
+        <h2>Enter Address & Other Details:</h2>
+       <form " method="POST">
+            {% csrf_token %}
+            {{form}}
+
+            <button type="submit">submit</button>
+        </form>
+
+
+
+    </div>
+</div>
+
+
+{%endblock%}
+
